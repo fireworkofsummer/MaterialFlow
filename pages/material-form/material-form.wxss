@@ -50,13 +50,20 @@
   border: 2rpx solid #e0e0e0;
   border-radius: 8rpx;
   font-size: 28rpx;
-  background: white;
+  background: transparent;
   box-sizing: border-box;
+  line-height: 1.4;
+  vertical-align: top;
+  z-index: 1;
+  position: relative;
+  color: #333;
+  min-height: 80rpx;
 }
 
 .form-input:focus {
   border-color: #1976d2;
   outline: none;
+  background: transparent;
 }
 
 .form-input[placeholder] {

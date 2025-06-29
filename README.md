@@ -1,8 +1,11 @@
-# 工料管家 - 微信小程序库存管理系统
+# MaterialFlow - 工料管家
+## WeChat Mini Program Inventory Management System
 
-这是一个专为小型工程队、装修公司或个人作坊设计的库存管理微信小程序。采用本地存储技术，实现离线可用的库存管理功能。
+一个专为小型工程队、装修公司或个人作坊设计的库存管理微信小程序。采用本地存储技术，实现离线可用的库存管理功能。
 
-## 核心特性
+*A WeChat Mini Program designed for small construction teams, renovation companies, and individual workshops. Features local storage technology for offline-capable inventory management.*
+
+## 核心特性 | Core Features
 
 - **本地存储**: 所有数据存储在小程序本地，离线可用
 - **FIFO成本核算**: 严格按照"先进先出"原则进行成本计算
@@ -188,4 +191,5 @@ const success = StorageManager.importData(backupData);
 
 ---
 
-**工料管家** - 让库存管理更简单高效
+**MaterialFlow (工料管家)** - 让库存管理更简单高效  
+*Making inventory management simpler and more efficient*
