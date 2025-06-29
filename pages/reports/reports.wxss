@@ -1,0 +1,247 @@
+/* 报表页面样式 */
+
+/* 日期选择区域 */
+.date-section {
+  background: white;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  border-radius: 12rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 30rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.date-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.date-picker {
+  flex: 1;
+  background: #f8f9fa;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  text-align: center;
+}
+
+.date-label {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 8rpx;
+}
+
+.date-value {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.date-separator {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 汇总统计区域 */
+.summary-section {
+  background: white;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  border-radius: 12rpx;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+}
+
+.summary-item {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-radius: 8rpx;
+  padding: 24rpx;
+  text-align: center;
+}
+
+.summary-item:nth-child(1),
+.summary-item:nth-child(5) {
+  background: linear-gradient(135deg, #e8f5e8, #c8e6c8);
+}
+
+.summary-item:nth-child(3) {
+  background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+}
+
+.summary-item:nth-child(4) {
+  background: linear-gradient(135deg, #fff3e0, #ffcc80);
+}
+
+.summary-number {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.summary-label {
+  font-size: 22rpx;
+  color: #666;
+}
+
+/* 操作按钮区域 */
+.action-section {
+  background: white;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  border-radius: 12rpx;
+}
+
+.btn-row {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.btn-row .btn-primary,
+.btn-row .btn-secondary {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+}
+
+/* 详细报表区域 */
+.detail-section {
+  background: white;
+  margin-bottom: 20rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.table-header {
+  background: #1976d2;
+  color: white;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 1rpx;
+}
+
+.header-cell {
+  padding: 20rpx 10rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  text-align: center;
+}
+
+.header-cell.name {
+  text-align: left;
+  padding-left: 20rpx;
+}
+
+.table-body {
+  background: #f5f5f5;
+}
+
+.table-row {
+  background: white;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 1rpx;
+  margin-bottom: 1rpx;
+}
+
+.table-row:active {
+  background: #f0f0f0;
+}
+
+.body-cell {
+  padding: 20rpx 10rpx;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.body-cell.name {
+  text-align: left;
+  padding-left: 20rpx;
+}
+
+.material-name {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.material-spec {
+  font-size: 22rpx;
+  color: #666;
+}
+
+.cell-quantity {
+  font-size: 24rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 4rpx;
+}
+
+.cell-value {
+  font-size: 22rpx;
+  color: #1976d2;
+}
+
+/* 说明区域 */
+.info-section {
+  background: #f8f9fa;
+  padding: 30rpx;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.info-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.info-content {
+  line-height: 1.6;
+}
+
+.info-item {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 375px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .table-header,
+  .table-row {
+    grid-template-columns: 3fr 1fr 1fr;
+  }
+  
+  /* 隐藏部分列 */
+  .header-cell:nth-child(3),
+  .header-cell:nth-child(4),
+  .body-cell:nth-child(3),
+  .body-cell:nth-child(4) {
+    display: none;
+  }
+}

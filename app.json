@@ -1,0 +1,60 @@
+{
+  "pages": [
+    "pages/dashboard/dashboard",
+    "pages/materials/materials",
+    "pages/material-detail/material-detail",
+    "pages/material-form/material-form",
+    "pages/inbound/inbound",
+    "pages/inbound-form/inbound-form",
+    "pages/outbound/outbound",
+    "pages/outbound-form/outbound-form",
+    "pages/reports/reports"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1976d2",
+    "navigationBarTitleTextColor": "white",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f5"
+  },
+  "tabBar": {
+    "color": "#666666",
+    "selectedColor": "#1976d2",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/dashboard/dashboard",
+        "text": "首页",
+        "iconPath": "images/dashboard.png",
+        "selectedIconPath": "images/dashboard-active.png"
+      },
+      {
+        "pagePath": "pages/materials/materials",
+        "text": "物料",
+        "iconPath": "images/materials.png",
+        "selectedIconPath": "images/materials-active.png"
+      },
+      {
+        "pagePath": "pages/inbound/inbound",
+        "text": "入库",
+        "iconPath": "images/inbound.png",
+        "selectedIconPath": "images/inbound-active.png"
+      },
+      {
+        "pagePath": "pages/outbound/outbound",
+        "text": "出库",
+        "iconPath": "images/outbound.png",
+        "selectedIconPath": "images/outbound-active.png"
+      },
+      {
+        "pagePath": "pages/reports/reports",
+        "text": "报表",
+        "iconPath": "images/reports.png",
+        "selectedIconPath": "images/reports-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,229 @@
+/* 入库表单页面样式 */
+
+.container {
+  padding-bottom: 120rpx;
+}
+
+/* 表单区域 */
+.form-section {
+  background: white;
+  margin-bottom: 20rpx;
+  border-radius: 12rpx;
+  padding: 30rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 30rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+/* 表单项 */
+.form-group {
+  margin-bottom: 30rpx;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+.form-label.required::after {
+  content: '*';
+  color: #f44336;
+  margin-left: 4rpx;
+}
+
+.form-input {
+  width: 100%;
+  padding: 24rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  background: white;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #1976d2;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 120rpx;
+  padding: 24rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  background: white;
+  box-sizing: border-box;
+}
+
+.form-display {
+  padding: 24rpx;
+  background: #f8f9fa;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  color: #666;
+  border: 2rpx solid #e9ecef;
+}
+
+.picker-display {
+  padding: 24rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  background: white;
+  color: #333;
+  position: relative;
+}
+
+.picker-display::after {
+  content: '';
+  position: absolute;
+  right: 24rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8rpx solid transparent;
+  border-right: 8rpx solid transparent;
+  border-top: 8rpx solid #999;
+}
+
+/* 表单行 */
+.form-row {
+  display: flex;
+  gap: 20rpx;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+/* 物料清单 */
+.item-list {
+  margin-top: 20rpx;
+}
+
+.item-card {
+  background: #f8f9fa;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+  border-left: 4rpx solid #1976d2;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.item-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #333;
+  flex: 1;
+}
+
+.item-delete {
+  width: 48rpx;
+  height: 48rpx;
+  background: #f44336;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-icon {
+  color: white;
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
+.item-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12rpx;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-label {
+  font-size: 24rpx;
+  color: #666;
+  min-width: 80rpx;
+}
+
+.info-value {
+  font-size: 24rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.total-price {
+  color: #1976d2;
+  font-weight: bold;
+}
+
+/* 总计区域 */
+.total-section {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 2rpx solid #e0e0e0;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-label {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.total-value {
+  font-size: 36rpx;
+  color: #1976d2;
+  font-weight: bold;
+}
+
+/* 操作按钮区域 */
+.action-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 20rpx;
+  border-top: 1rpx solid #e0e0e0;
+  box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 20rpx;
+}
+
+.action-section .btn-primary,
+.action-section .btn-secondary {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+}

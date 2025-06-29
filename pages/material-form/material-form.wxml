@@ -1,0 +1,120 @@
+<view class="container">
+  <form class="material-form">
+    <!-- 基本信息 -->
+    <view class="form-section">
+      <view class="section-title">基本信息</view>
+      
+      <view class="form-group">
+        <text class="form-label required">物料名称</text>
+        <input
+          class="form-input"
+          placeholder="请输入物料名称"
+          value="{{form.name}}"
+          data-field="name"
+          bindinput="onInputChange"
+          maxlength="50"
+        />
+      </view>
+      
+      <view class="form-group">
+        <text class="form-label required">规格型号</text>
+        <input
+          class="form-input"
+          placeholder="请输入规格型号"
+          value="{{form.specification}}"
+          data-field="specification"
+          bindinput="onInputChange"
+          maxlength="100"
+        />
+      </view>
+      
+      <view class="form-group">
+        <text class="form-label required">单位</text>
+        <picker
+          mode="selector"
+          range="{{units}}"
+          value="{{units.indexOf(form.unit)}}"
+          bindchange="onUnitChange"
+        >
+          <view class="picker-display">
+            {{form.unit || '请选择单位'}}
+          </view>
+        </picker>
+      </view>
+      
+      <view class="form-group">
+        <text class="form-label">物料分类</text>
+        <picker
+          mode="selector"
+          range="{{categories}}"
+          value="{{categories.indexOf(form.category)}}"
+          bindchange="onCategoryChange"
+        >
+          <view class="picker-display">
+            {{form.category || '请选择分类'}}
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 库存管理 -->
+    <view class="form-section">
+      <view class="section-title">库存管理</view>
+      
+      <view class="form-group">
+        <text class="form-label">最低库存预警</text>
+        <input
+          class="form-input"
+          placeholder="库存低于此数量时预警"
+          value="{{form.minStockAlert}}"
+          data-field="minStockAlert"
+          bindinput="onInputChange"
+          type="digit"
+        />
+        <view class="form-hint">设置后，当库存低于此数量时会显示预警提示</view>
+      </view>
+    </view>
+
+    <!-- 供应商信息 -->
+    <view class="form-section">
+      <view class="section-title">供应商信息</view>
+      
+      <view class="form-group">
+        <text class="form-label">供应商</text>
+        <input
+          class="form-input"
+          placeholder="请输入供应商名称"
+          value="{{form.supplier}}"
+          data-field="supplier"
+          bindinput="onInputChange"
+          maxlength="100"
+        />
+      </view>
+    </view>
+
+    <!-- 备注信息 -->
+    <view class="form-section">
+      <view class="section-title">备注信息</view>
+      
+      <view class="form-group">
+        <text class="form-label">备注</text>
+        <textarea
+          class="form-textarea"
+          placeholder="请输入备注信息"
+          value="{{form.remark}}"
+          data-field="remark"
+          bindinput="onInputChange"
+          maxlength="200"
+        />
+      </view>
+    </view>
+  </form>
+
+  <!-- 操作按钮 -->
+  <view class="action-section">
+    <view class="btn-secondary" bindtap="onReset">重置</view>
+    <view class="btn-primary" bindtap="onSave">
+      {{isEdit ? '更新' : '保存'}}
+    </view>
+  </view>
+</view>

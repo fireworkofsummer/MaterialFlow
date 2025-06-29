@@ -1,0 +1,168 @@
+/* 物料管理页面样式 */
+
+/* 搜索区域 */
+.search-section {
+  background: white;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  border-radius: 12rpx;
+}
+
+.search-bar {
+  margin-bottom: 20rpx;
+}
+
+.search-input {
+  width: 100%;
+  padding: 20rpx;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  background: #f9f9f9;
+}
+
+.category-picker {
+  padding: 20rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  color: #666;
+  text-align: center;
+}
+
+/* 物料列表 */
+.materials-list {
+  margin-bottom: 100rpx;
+}
+
+.material-item {
+  background: white;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  border-left: 6rpx solid #1976d2;
+}
+
+.material-item.low-stock {
+  border-left-color: #ff9800;
+  box-shadow: 0 2rpx 12rpx rgba(255, 152, 0, 0.2);
+}
+
+.material-main {
+  padding: 24rpx;
+}
+
+.material-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.material-name {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  flex: 1;
+}
+
+.stock-badge {
+  background: #fff3e0;
+  color: #e65100;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  display: flex;
+  align-items: center;
+}
+
+.warning-icon {
+  margin-right: 4rpx;
+}
+
+.material-spec {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
+
+.material-stats {
+  display: flex;
+  gap: 40rpx;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: #999;
+  margin-bottom: 4rpx;
+}
+
+.stat-value {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 操作按钮 */
+.material-actions {
+  display: flex;
+  border-top: 1rpx solid #f0f0f0;
+  background: #fafafa;
+}
+
+.action-btn-small {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 10rpx;
+  font-size: 26rpx;
+  color: #1976d2;
+  border-right: 1rpx solid #f0f0f0;
+}
+
+.action-btn-small:last-child {
+  border-right: none;
+}
+
+.action-btn-small.disabled {
+  color: #ccc;
+}
+
+.action-btn-small.danger {
+  color: #f44336;
+}
+
+.action-btn-small:active {
+  background: #f0f0f0;
+}
+
+/* 浮动按钮 */
+.fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: 120rpx;
+  width: 100rpx;
+  height: 100rpx;
+  background: #1976d2;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 16rpx rgba(25, 118, 210, 0.3);
+  z-index: 1000;
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+.fab-icon {
+  color: white;
+  font-size: 48rpx;
+  font-weight: bold;
+}

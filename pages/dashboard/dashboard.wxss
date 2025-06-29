@@ -1,0 +1,165 @@
+/* 仪表盘样式 */
+.stats-section {
+  margin-bottom: 20rpx;
+}
+
+.stats-row {
+  display: flex;
+  gap: 20rpx;
+}
+
+.stats-card-small {
+  flex: 1;
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
+  color: white;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  text-align: center;
+}
+
+.stats-card-small .stats-number {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.stats-card-small .stats-label {
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+
+/* 卡片头部 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.warning-title {
+  color: #ff9800;
+  display: flex;
+  align-items: center;
+}
+
+.warning-icon {
+  margin-right: 8rpx;
+}
+
+.link-text {
+  color: #1976d2;
+  font-size: 26rpx;
+}
+
+/* 预警列表 */
+.warning-list {
+  margin-top: 20rpx;
+}
+
+.warning-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff3e0;
+  border-left: 6rpx solid #ff9800;
+  padding: 20rpx;
+  margin-bottom: 12rpx;
+  border-radius: 8rpx;
+}
+
+.warning-content {
+  flex: 1;
+}
+
+.warning-item .warning-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #e65100;
+  margin-bottom: 4rpx;
+}
+
+.warning-desc {
+  font-size: 24rpx;
+  color: #bf360c;
+}
+
+.warning-action {
+  color: #1976d2;
+  font-size: 26rpx;
+  padding: 10rpx 20rpx;
+  background: white;
+  border-radius: 20rpx;
+}
+
+/* 快捷操作 */
+.quick-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 20rpx;
+  border-radius: 12rpx;
+  background: #f5f5f5;
+  border: 2rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.inbound-btn {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-color: #2196f3;
+}
+
+.outbound-btn {
+  background: linear-gradient(135deg, #fff3e0, #ffcc80);
+  border-color: #ff9800;
+}
+
+.action-icon {
+  font-size: 48rpx;
+  margin-bottom: 12rpx;
+}
+
+.action-text {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 今日概览 */
+.today-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20rpx;
+}
+
+.today-item {
+  text-align: center;
+}
+
+.today-label {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 8rpx;
+}
+
+.today-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #1976d2;
+}

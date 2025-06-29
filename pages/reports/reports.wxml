@@ -1,0 +1,136 @@
+<view class="container">
+  <!-- 日期选择 -->
+  <view class="date-section">
+    <view class="section-title">报表日期范围</view>
+    <view class="date-row">
+      <picker
+        mode="date"
+        value="{{dateRange.start}}"
+        bindchange="onStartDateChange"
+      >
+        <view class="date-picker">
+          <text class="date-label">开始日期</text>
+          <text class="date-value">{{dateRange.start}}</text>
+        </view>
+      </picker>
+      
+      <text class="date-separator">至</text>
+      
+      <picker
+        mode="date"
+        value="{{dateRange.end}}"
+        bindchange="onEndDateChange"
+      >
+        <view class="date-picker">
+          <text class="date-label">结束日期</text>
+          <text class="date-value">{{dateRange.end}}</text>
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 汇总统计 -->
+  <view class="summary-section">
+    <view class="section-title">汇总统计</view>
+    <view class="summary-grid">
+      <view class="summary-item">
+        <view class="summary-number">{{summary.totalMaterials}}</view>
+        <view class="summary-label">物料种类</view>
+      </view>
+      <view class="summary-item">
+        <view class="summary-number">¥{{summary.totalBeginningValue.toFixed(2)}}</view>
+        <view class="summary-label">期初价值</view>
+      </view>
+      <view class="summary-item">
+        <view class="summary-number">¥{{summary.totalInboundValue.toFixed(2)}}</view>
+        <view class="summary-label">期间入库</view>
+      </view>
+      <view class="summary-item">
+        <view class="summary-number">¥{{summary.totalOutboundValue.toFixed(2)}}</view>
+        <view class="summary-label">期间出库</view>
+      </view>
+      <view class="summary-item">
+        <view class="summary-number">¥{{summary.totalEndingValue.toFixed(2)}}</view>
+        <view class="summary-label">期末价值</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-section">
+    <view class="btn-row">
+      <view class="btn-secondary" bindtap="onToggleDetail">
+        {{showDetail ? '隐藏详情' : '显示详情'}}
+      </view>
+      <view class="btn-primary" bindtap="onExportReport">
+        导出数据
+      </view>
+    </view>
+    <view class="btn-danger" bindtap="onClearAllData">
+      清空所有数据
+    </view>
+  </view>
+
+  <!-- 详细报表 -->
+  <view class="detail-section" wx:if="{{showDetail && reportData.length > 0}}">
+    <view class="section-title">物料明细报表</view>
+    
+    <!-- 表头 -->
+    <view class="table-header">
+      <view class="header-cell name">物料名称</view>
+      <view class="header-cell">期初</view>
+      <view class="header-cell">入库</view>
+      <view class="header-cell">出库</view>
+      <view class="header-cell">期末</view>
+    </view>
+    
+    <!-- 表格内容 -->
+    <view class="table-body">
+      <view 
+        class="table-row"
+        wx:for="{{reportData}}" 
+        wx:key="materialId"
+        bindtap="onViewMaterialDetail"
+        data-item="{{item}}"
+      >
+        <view class="body-cell name">
+          <view class="material-name">{{item.materialName}}</view>
+          <view class="material-spec">{{item.specification}}</view>
+        </view>
+        <view class="body-cell">
+          <view class="cell-quantity">{{item.beginningStock}}{{item.unit}}</view>
+          <view class="cell-value">¥{{item.beginningValue.toFixed(2)}}</view>
+        </view>
+        <view class="body-cell">
+          <view class="cell-quantity">{{item.periodInbound}}{{item.unit}}</view>
+          <view class="cell-value">¥{{item.periodInboundValue.toFixed(2)}}</view>
+        </view>
+        <view class="body-cell">
+          <view class="cell-quantity">{{item.periodOutbound}}{{item.unit}}</view>
+          <view class="cell-value">¥{{item.periodOutboundValue.toFixed(2)}}</view>
+        </view>
+        <view class="body-cell">
+          <view class="cell-quantity">{{item.endingStock}}{{item.unit}}</view>
+          <view class="cell-value">¥{{item.endingValue.toFixed(2)}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{showDetail && reportData.length === 0}}">
+    <view class="empty-icon">📊</view>
+    <view class="empty-text">选择的日期范围内暂无数据</view>
+  </view>
+
+  <!-- 说明 -->
+  <view class="info-section">
+    <view class="info-title">说明</view>
+    <view class="info-content">
+      <view class="info-item">• 成本核算采用先进先出(FIFO)原则</view>
+      <view class="info-item">• 期初/期末价值基于当时的批次单价计算</view>
+      <view class="info-item">• 导出功能可备份所有数据</view>
+      <view class="info-item">• 清空数据操作不可恢复，请谨慎使用</view>
+    </view>
+  </view>
+</view>

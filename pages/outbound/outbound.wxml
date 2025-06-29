@@ -1,0 +1,116 @@
+<view class="container">
+  <!-- 筛选区域 -->
+  <view class="filter-section">
+    <view class="search-bar">
+      <input
+        class="search-input"
+        placeholder="搜索出库单号、领料人..."
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+      />
+    </view>
+    
+    <view class="filter-row">
+      <view class="date-range">
+        <picker
+          mode="date"
+          value="{{dateRange.start}}"
+          bindchange="onStartDateChange"
+        >
+          <view class="date-picker">
+            {{dateRange.start || '开始日期'}}
+          </view>
+        </picker>
+        <text class="date-separator">至</text>
+        <picker
+          mode="date"
+          value="{{dateRange.end}}"
+          bindchange="onEndDateChange"
+        >
+          <view class="date-picker">
+            {{dateRange.end || '结束日期'}}
+          </view>
+        </picker>
+      </view>
+      
+      <picker
+        mode="selector"
+        range="['按日期降序', '按日期升序', '按成本降序', '按成本升序']"
+        value="{{['date-desc', 'date-asc', 'amount-desc', 'amount-asc'].indexOf(sortBy)}}"
+        bindchange="onSortChange"
+      >
+        <view class="sort-picker">排序</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 出库记录列表 -->
+  <view class="records-list" wx:if="{{filteredRecords.length > 0}}">
+    <view 
+      class="record-item"
+      wx:for="{{filteredRecords}}" 
+      wx:key="id"
+    >
+      <view class="record-header" bindtap="onViewDetail" data-record="{{item}}">
+        <view class="record-number">{{item.outboundNumber}}</view>
+        <view class="record-date">{{item.displayDate}}</view>
+      </view>
+      
+      <view class="record-info">
+        <view class="info-row">
+          <text class="info-label">领料人/项目:</text>
+          <text class="info-value">{{item.recipient || '未填写'}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">经手人:</text>
+          <text class="info-value">{{item.operator || '未填写'}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">物料种类:</text>
+          <text class="info-value">{{item.items.length}}种</text>
+        </view>
+      </view>
+      
+      <view class="record-footer">
+        <view class="total-amount">
+          <text class="amount-label">总成本:</text>
+          <text class="amount-value">¥{{item.totalCostFormatted}}</text>
+        </view>
+        <view class="record-actions">
+          <view class="action-btn" bindtap="onViewDetail" data-record="{{item}}">
+            详情
+          </view>
+          <view class="action-btn danger" bindtap="onDeleteRecord" data-id="{{item.id}}">
+            删除
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <view class="empty-icon">📤</view>
+    <view class="empty-text">暂无出库记录</view>
+    <view class="btn-primary" bindtap="onAddOutbound">创建第一个出库单</view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-card" wx:if="{{filteredRecords.length > 0}}">
+    <view class="stats-item">
+      <text class="stats-label">记录总数</text>
+      <text class="stats-value">{{filteredRecords.length}}</text>
+    </view>
+    <view class="stats-item">
+      <text class="stats-label">总成本</text>
+      <text class="stats-value">
+        ¥{{filteredTotalCost}}
+      </text>
+    </view>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="fab" bindtap="onAddOutbound" wx:if="{{filteredRecords.length > 0}}">
+    <text class="fab-icon">+</text>
+  </view>
+</view>

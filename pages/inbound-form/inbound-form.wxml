@@ -1,0 +1,166 @@
+<view class="container">
+  <!-- 基本信息 -->
+  <view class="form-section">
+    <view class="section-title">基本信息</view>
+    
+    <view class="form-group">
+      <text class="form-label">入库单号</text>
+      <view class="form-display">{{form.inboundNumber}}</view>
+    </view>
+    
+    <view class="form-group">
+      <text class="form-label required">入库日期</text>
+      <picker
+        mode="date"
+        value="{{form.inboundDate}}"
+        bindchange="onFormInput"
+        data-field="inboundDate"
+      >
+        <view class="picker-display">
+          {{form.inboundDate || '请选择日期'}}
+        </view>
+      </picker>
+    </view>
+    
+    <view class="form-group">
+      <text class="form-label">供应商</text>
+      <input
+        class="form-input"
+        placeholder="请输入供应商名称"
+        value="{{form.supplier}}"
+        data-field="supplier"
+        bindinput="onFormInput"
+      />
+    </view>
+    
+    <view class="form-group">
+      <text class="form-label">经手人</text>
+      <input
+        class="form-input"
+        placeholder="请输入经手人姓名"
+        value="{{form.operator}}"
+        data-field="operator"
+        bindinput="onFormInput"
+      />
+    </view>
+  </view>
+
+  <!-- 添加物料 -->
+  <view class="form-section">
+    <view class="section-title">添加物料</view>
+    
+    <view class="form-group">
+      <text class="form-label required">选择物料</text>
+      <picker
+        mode="selector"
+        range="{{materials}}"
+        range-key="name"
+        value="{{selectedMaterialIndex}}"
+        bindchange="onMaterialChange"
+        >
+        <view class="picker-display">
+          {{selectedMaterialName || '请选择物料'}}
+        </view>
+      </picker>
+    </view>
+    
+    <view class="form-row" wx:if="{{newItem.materialId}}">
+      <view class="form-group">
+        <text class="form-label required">数量</text>
+        <input
+          class="form-input"
+          placeholder="请输入数量"
+          value="{{newItem.quantity}}"
+          data-field="quantity"
+          bindinput="onItemInput"
+          type="digit"
+        />
+      </view>
+      
+      <view class="form-group">
+        <text class="form-label required">单价</text>
+        <input
+          class="form-input"
+          placeholder="请输入单价"
+          value="{{newItem.unitPrice}}"
+          data-field="unitPrice"
+          bindinput="onItemInput"
+          type="digit"
+        />
+      </view>
+    </view>
+    
+    <view class="btn-secondary" bindtap="onAddItem" wx:if="{{newItem.materialId}}">
+      添加到清单
+    </view>
+  </view>
+
+  <!-- 入库清单 -->
+  <view class="form-section" wx:if="{{form.items.length > 0}}">
+    <view class="section-title">入库清单 ({{form.items.length}})</view>
+    
+    <view class="item-list">
+      <view 
+        class="item-card"
+        wx:for="{{form.items}}" 
+        wx:key="materialId"
+      >
+        <view class="item-header">
+          <view class="item-name">{{item.materialName}}</view>
+          <view class="item-delete" bindtap="onDeleteItem" data-index="{{index}}">
+            <text class="delete-icon">✕</text>
+          </view>
+        </view>
+        
+        <view class="item-info">
+          <view class="info-row">
+            <text class="info-label">规格:</text>
+            <text class="info-value">{{item.specification}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">数量:</text>
+            <text class="info-value">{{item.quantity}}{{item.unit}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">单价:</text>
+            <text class="info-value">¥{{item.unitPrice}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">小计:</text>
+            <text class="info-value total-price">¥{{item.totalPrice.toFixed(2)}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 总计 -->
+    <view class="total-section">
+      <view class="total-row">
+        <text class="total-label">总金额:</text>
+        <text class="total-value">¥{{totalAmount.toFixed(2)}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 备注 -->
+  <view class="form-section">
+    <view class="section-title">备注信息</view>
+    
+    <view class="form-group">
+      <textarea
+        class="form-textarea"
+        placeholder="请输入备注信息（可选）"
+        value="{{form.remark}}"
+        data-field="remark"
+        bindinput="onFormInput"
+        maxlength="200"
+      />
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-section">
+    <view class="btn-secondary" bindtap="onCancel">取消</view>
+    <view class="btn-primary" bindtap="onSave">保存入库</view>
+  </view>
+</view>

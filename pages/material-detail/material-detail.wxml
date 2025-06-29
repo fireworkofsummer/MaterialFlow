@@ -1,0 +1,110 @@
+<view class="container" wx:if="{{material}}">
+  <!-- 物料基本信息 -->
+  <view class="card">
+    <view class="material-header">
+      <view class="material-title">
+        <view class="material-name">{{material.name}}</view>
+        <view class="warning-badge" wx:if="{{isLowStock}}">
+          <text class="warning-icon">⚠️</text>
+          库存不足
+        </view>
+      </view>
+      <view class="material-spec">{{material.specification}}</view>
+    </view>
+    
+    <view class="material-info">
+      <view class="info-row">
+        <text class="info-label">物料分类</text>
+        <text class="info-value">{{material.category || '未分类'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">单位</text>
+        <text class="info-value">{{material.unit}}</text>
+      </view>
+      <view class="info-row" wx:if="{{material.minStockAlert}}">
+        <text class="info-label">预警线</text>
+        <text class="info-value">{{material.minStockAlert}}{{material.unit}}</text>
+      </view>
+      <view class="info-row" wx:if="{{material.supplier}}">
+        <text class="info-label">供应商</text>
+        <text class="info-value">{{material.supplier}}</text>
+      </view>
+      <view class="info-row" wx:if="{{material.remark}}">
+        <text class="info-label">备注</text>
+        <text class="info-value">{{material.remark}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 库存统计 -->
+  <view class="card">
+    <view class="card-title">库存统计</view>
+    <view class="stock-stats">
+      <view class="stat-card">
+        <view class="stat-number {{isLowStock ? 'text-warning' : 'text-primary'}}">
+          {{currentStock}}{{material.unit}}
+        </view>
+        <view class="stat-label">当前库存</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-number text-success">¥{{currentValue.toFixed(2)}}</view>
+        <view class="stat-label">库存价值</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 库存批次 -->
+  <view class="card" wx:if="{{stockBatches.length > 0}}">
+    <view class="card-title">库存批次 ({{stockBatches.length}})</view>
+    <view class="batch-list">
+      <view 
+        class="batch-item"
+        wx:for="{{stockBatches}}" 
+        wx:key="id"
+        bindtap="onViewBatch"
+        data-batch="{{item}}"
+      >
+        <view class="batch-main">
+          <view class="batch-date">{{item.inboundDate.split('T')[0]}}</view>
+          <view class="batch-info">
+            <text class="batch-quantity">{{item.remainingQuantity}}/{{item.originalQuantity}}{{material.unit}}</text>
+            <text class="batch-price">¥{{item.unitPrice}}/{{material.unit}}</text>
+          </view>
+        </view>
+        <view class="batch-value">
+          ¥{{item.batchValue}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 无库存提示 -->
+  <view class="card" wx:else>
+    <view class="empty-state">
+      <view class="empty-icon">📦</view>
+      <view class="empty-text">暂无库存</view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-section">
+    <view class="action-row">
+      <view class="btn-primary" bindtap="onInbound">入库</view>
+      <view 
+        class="btn-secondary {{currentStock <= 0 ? 'disabled' : ''}}" 
+        bindtap="onOutbound"
+      >
+        出库
+      </view>
+    </view>
+    <view class="action-row">
+      <view class="btn-secondary" bindtap="onEditMaterial">编辑物料</view>
+      <view class="btn-danger" bindtap="onDeleteMaterial">删除物料</view>
+    </view>
+  </view>
+</view>
+
+<!-- 加载状态 -->
+<view class="loading" wx:else>
+  <view class="loading-text">加载中...</view>
+</view>

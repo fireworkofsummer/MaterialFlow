@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "小程序开发",
+			"type": "shell",
+			"command": "echo",
+			"args": [
+				"工料管家小程序项目已创建完成！请在微信开发者工具中打开此项目目录。"
+			],
+			"group": "build",
+			"isBackground": false,
+			"problemMatcher": []
+		}
+	]
+}

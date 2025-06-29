@@ -1,0 +1,95 @@
+<view class="container">
+  <!-- 搜索和筛选 -->
+  <view class="search-section">
+    <view class="search-bar">
+      <input
+        class="search-input"
+        placeholder="搜索物料名称、规格..."
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+      />
+    </view>
+    
+    <picker
+      mode="selector"
+      range="{{categories}}"
+      value="{{categories.indexOf(selectedCategory)}}"
+      bindchange="onCategoryChange"
+    >
+      <view class="category-picker">
+        分类: {{selectedCategory === 'all' ? '全部' : selectedCategory}}
+      </view>
+    </picker>
+  </view>
+
+  <!-- 物料列表 -->
+  <view class="materials-list" wx:if="{{filteredMaterials.length > 0}}">
+    <view 
+      class="material-item {{item.isLowStock ? 'low-stock' : ''}}"
+      wx:for="{{filteredMaterials}}" 
+      wx:key="id"
+    >
+      <!-- 主要信息 -->
+      <view class="material-main" bindtap="onViewDetail" data-id="{{item.id}}">
+        <view class="material-header">
+          <view class="material-name">{{item.name}}</view>
+          <view class="stock-badge" wx:if="{{item.isLowStock}}">
+            <text class="warning-icon">⚠️</text>
+            库存不足
+          </view>
+        </view>
+        
+        <view class="material-spec">{{item.specification}}</view>
+        
+        <view class="material-stats">
+          <view class="stat-item">
+            <text class="stat-label">当前库存</text>
+            <text class="stat-value {{item.isLowStock ? 'text-warning' : ''}}">
+              {{item.currentStock}}{{item.unit}}
+            </text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">库存价值</text>
+            <text class="stat-value">¥{{item.currentValue.toFixed(2)}}</text>
+          </view>
+          <view class="stat-item" wx:if="{{item.minStockAlert}}">
+            <text class="stat-label">预警线</text>
+            <text class="stat-value">{{item.minStockAlert}}{{item.unit}}</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 操作按钮 -->
+      <view class="material-actions">
+        <view class="action-btn-small" bindtap="onQuickInbound" data-id="{{item.id}}">
+          入库
+        </view>
+        <view 
+          class="action-btn-small {{item.currentStock <= 0 ? 'disabled' : ''}}" 
+          bindtap="onQuickOutbound" 
+          data-id="{{item.id}}"
+        >
+          出库
+        </view>
+        <view class="action-btn-small" bindtap="onEditMaterial" data-id="{{item.id}}">
+          编辑
+        </view>
+        <view class="action-btn-small danger" bindtap="onDeleteMaterial" data-id="{{item.id}}">
+          删除
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <view class="empty-icon">📦</view>
+    <view class="empty-text">暂无物料数据</view>
+    <view class="btn-primary" bindtap="onAddMaterial">添加第一个物料</view>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="fab" bindtap="onAddMaterial" wx:if="{{filteredMaterials.length > 0}}">
+    <text class="fab-icon">+</text>
+  </view>
+</view>

@@ -1,0 +1,198 @@
+/* 物料详情页面样式 */
+
+/* 物料头部 */
+.material-header {
+  margin-bottom: 20rpx;
+}
+
+.material-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.material-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+}
+
+.warning-badge {
+  background: #fff3e0;
+  color: #e65100;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  display: flex;
+  align-items: center;
+}
+
+.warning-icon {
+  margin-right: 4rpx;
+}
+
+.material-spec {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 物料信息 */
+.material-info {
+  margin-top: 20rpx;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 28rpx;
+  color: #666;
+  min-width: 120rpx;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #333;
+  flex: 1;
+  text-align: right;
+}
+
+/* 库存统计 */
+.stock-stats {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.stat-card {
+  flex: 1;
+  text-align: center;
+  background: #f8f9fa;
+  padding: 30rpx;
+  border-radius: 12rpx;
+}
+
+.stat-number {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 批次列表 */
+.batch-list {
+  margin-top: 20rpx;
+}
+
+.batch-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  background: #f8f9fa;
+  border-radius: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.batch-item:active {
+  background: #e9ecef;
+}
+
+.batch-main {
+  flex: 1;
+}
+
+.batch-date {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.batch-info {
+  display: flex;
+  gap: 20rpx;
+}
+
+.batch-quantity {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.batch-price {
+  font-size: 24rpx;
+  color: #1976d2;
+}
+
+.batch-value {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 操作区域 */
+.action-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 20rpx;
+  border-top: 1rpx solid #e0e0e0;
+  box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.action-row {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.action-row:last-child {
+  margin-bottom: 0;
+}
+
+.action-row .btn-primary,
+.action-row .btn-secondary,
+.action-row .btn-danger {
+  flex: 1;
+  margin: 0;
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* 加载状态 */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400rpx;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 页面底部留白 */
+.container {
+  padding-bottom: 200rpx;
+}

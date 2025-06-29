@@ -1,0 +1,210 @@
+<view class="container">
+  <!-- 基本信息 -->
+  <view class="form-section">
+    <view class="section-title">基本信息</view>
+    
+    <view class="form-group">
+      <text class="form-label">出库单号</text>
+      <view class="form-display">{{form.outboundNumber}}</view>
+    </view>
+    
+    <view class="form-group">
+      <text class="form-label required">出库日期</text>
+      <picker
+        mode="date"
+        value="{{form.outboundDate}}"
+        bindchange="onFormInput"
+        data-field="outboundDate"
+      >
+        <view class="picker-display">
+          {{form.outboundDate || '请选择日期'}}
+        </view>
+      </picker>
+    </view>
+    
+    <view class="form-group">
+      <text class="form-label">领料人/项目</text>
+      <input
+        class="form-input"
+        placeholder="请输入领料人或项目名称"
+        value="{{form.recipient}}"
+        data-field="recipient"
+        bindinput="onFormInput"
+      />
+    </view>
+    
+    <view class="form-group">
+      <text class="form-label">经手人</text>
+      <input
+        class="form-input"
+        placeholder="请输入经手人姓名"
+        value="{{form.operator}}"
+        data-field="operator"
+        bindinput="onFormInput"
+      />
+    </view>
+  </view>
+
+  <!-- 添加物料 -->
+  <view class="form-section">
+    <view class="section-title">添加物料</view>
+    
+    <view class="form-group" wx:if="{{availableMaterials.length > 0}}">
+      <text class="form-label required">选择物料</text>
+      <picker
+        mode="selector"
+        range="{{availableMaterials}}"
+        range-key="name"
+        value="{{selectedMaterialIndex}}"
+        bindchange="onMaterialChange"
+      >
+        <view class="picker-display">
+          {{selectedMaterialName || '请选择物料'}}
+        </view>
+      </picker>
+      
+      <!-- 显示当前库存 -->
+      <view class="stock-info" wx:if="{{newItem.materialId}}">
+        <text class="stock-label">当前库存:</text>
+        <text class="stock-value">
+          {{selectedMaterialStock}}{{selectedMaterialUnit}}
+        </text>
+      </view>
+    </view>
+    
+    <!-- 无库存提示 -->
+    <view class="no-stock" wx:else>
+      <view class="no-stock-icon">📦</view>
+      <view class="no-stock-text">暂无可出库的物料</view>
+    </view>
+    
+    <view class="form-group" wx:if="{{newItem.materialId}}">
+      <text class="form-label required">出库数量</text>
+      <input
+        class="form-input"
+        placeholder="请输入出库数量"
+        value="{{newItem.quantity}}"
+        data-field="quantity"
+        bindinput="onItemInput"
+        type="digit"
+      />
+    </view>
+    
+    <!-- 成本预览 -->
+    <view class="cost-preview" wx:if="{{showCostPreview && costPreview && !costPreview.error}}">
+      <view class="preview-title">FIFO成本预览</view>
+      <view class="preview-summary">
+        <view class="summary-item">
+          <text class="summary-label">出库数量:</text>
+          <text class="summary-value">{{costPreview.quantity}}{{costPreview.unit}}</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-label">总成本:</text>
+          <text class="summary-value cost-value">¥{{costPreview.totalCostFormatted}}</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-label">平均成本:</text>
+          <text class="summary-value">¥{{costPreview.averagePriceFormatted}}/{{costPreview.unit}}</text>
+        </view>
+      </view>
+      
+      <view class="batch-details">
+        <view class="details-title">批次消耗明细:</view>
+        <view 
+          class="batch-item"
+          wx:for="{{costPreview.batchDetails}}" 
+          wx:key="batchId"
+        >
+          <view class="batch-date">{{item.displayDate}}</view>
+          <view class="batch-quantity">{{item.consumedQuantity}}{{costPreview.unit}}</view>
+          <view class="batch-price">¥{{item.unitPrice}}</view>
+          <view class="batch-cost">¥{{item.costFormatted}}</view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 错误提示 -->
+    <view class="error-tip" wx:if="{{costPreview && costPreview.error}}">
+      <text class="error-icon">⚠️</text>
+      <text class="error-text">{{costPreview.error}}</text>
+    </view>
+    
+    <view class="btn-secondary" bindtap="onAddItem" wx:if="{{newItem.materialId && newItem.quantity}}">
+      添加到清单
+    </view>
+  </view>
+
+  <!-- 出库清单 -->
+  <view class="form-section" wx:if="{{form.items.length > 0}}">
+    <view class="section-title">出库清单 ({{form.items.length}})</view>
+    
+    <view class="item-list">
+      <view 
+        class="item-card"
+        wx:for="{{form.items}}" 
+        wx:key="materialId"
+      >
+        <view class="item-header">
+          <view class="item-name">{{item.materialName}}</view>
+          <view class="item-actions">
+            <view class="action-detail" bindtap="onViewItemDetail" data-item="{{item}}">
+              <text class="detail-icon">ℹ️</text>
+            </view>
+            <view class="item-delete" bindtap="onDeleteItem" data-index="{{index}}">
+              <text class="delete-icon">✕</text>
+            </view>
+          </view>
+        </view>
+        
+        <view class="item-info">
+          <view class="info-row">
+            <text class="info-label">规格:</text>
+            <text class="info-value">{{item.specification}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">数量:</text>
+            <text class="info-value">{{item.quantity}}{{item.unit}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">平均成本:</text>
+            <text class="info-value">¥{{item.averageCostFormatted}}/{{item.unit}}</text>
+          </view>
+          <view class="info-row">
+            <text class="info-label">总成本:</text>
+            <text class="info-value total-cost">¥{{item.totalCostFormatted}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 总计 -->
+    <view class="total-section">
+      <view class="total-row">
+        <text class="total-label">总成本:</text>
+        <text class="total-value">¥{{totalCostFormatted}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 备注 -->
+  <view class="form-section">
+    <view class="section-title">备注信息</view>
+    
+    <view class="form-group">
+      <textarea
+        class="form-textarea"
+        placeholder="请输入备注信息（可选）"
+        value="{{form.remark}}"
+        data-field="remark"
+        bindinput="onFormInput"
+        maxlength="200"
+      />
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-section">
+    <view class="btn-secondary" bindtap="onCancel">取消</view>
+    <view class="btn-primary" bindtap="onSave">保存出库</view>
+  </view>
+</view>

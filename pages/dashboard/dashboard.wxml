@@ -1,0 +1,79 @@
+<view class="container">
+  <!-- 顶部统计卡片 -->
+  <view class="stats-section">
+    <view class="stats-card">
+      <view class="stats-number">¥{{totalStockValue}}</view>
+      <view class="stats-label">库存总价值</view>
+    </view>
+    
+    <view class="stats-row">
+      <view class="stats-card-small">
+        <view class="stats-number">{{totalMaterials}}</view>
+        <view class="stats-label">物料种类</view>
+      </view>
+      <view class="stats-card-small">
+        <view class="stats-number">{{quickStats.todayInbound}}</view>
+        <view class="stats-label">今日入库</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 库存预警 -->
+  <view class="card" wx:if="{{totalWarnings > 0}}">
+    <view class="card-header">
+      <view class="card-title warning-title">
+        <text class="warning-icon">⚠️</text>
+        库存预警 ({{totalWarnings}})
+      </view>
+      <text class="link-text" bindtap="onViewAllWarnings">查看全部</text>
+    </view>
+    
+    <view class="warning-list">
+      <view class="warning-item" wx:for="{{warnings}}" wx:key="materialId">
+        <view class="warning-content">
+          <view class="warning-title">{{item.materialName}}</view>
+          <view class="warning-desc">
+            当前库存: {{item.currentStock}}{{item.unit}} / 预警线: {{item.minStockAlert}}{{item.unit}}
+          </view>
+        </view>
+        <view class="warning-action" bindtap="onViewMaterial" data-id="{{item.materialId}}">
+          查看
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷操作 -->
+  <view class="card">
+    <view class="card-title">快捷操作</view>
+    <view class="quick-actions">
+      <view class="action-btn inbound-btn" bindtap="onQuickInbound">
+        <view class="action-icon">📦</view>
+        <view class="action-text">快速入库</view>
+      </view>
+      <view class="action-btn outbound-btn" bindtap="onQuickOutbound">
+        <view class="action-icon">📤</view>
+        <view class="action-text">快速出库</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 今日概览 -->
+  <view class="card">
+    <view class="card-title">今日概览</view>
+    <view class="today-stats">
+      <view class="today-item">
+        <view class="today-label">入库单数</view>
+        <view class="today-value">{{quickStats.todayInbound}}</view>
+      </view>
+      <view class="today-item">
+        <view class="today-label">出库单数</view>
+        <view class="today-value">{{quickStats.todayOutbound}}</view>
+      </view>
+      <view class="today-item">
+        <view class="today-label">预警物料</view>
+        <view class="today-value text-warning">{{quickStats.lowStockCount}}</view>
+      </view>
+    </view>
+  </view>
+</view>
