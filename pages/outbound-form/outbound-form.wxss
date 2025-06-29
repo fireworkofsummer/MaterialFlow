@@ -54,7 +54,6 @@
   box-sizing: border-box;
   line-height: 1.4;
   vertical-align: top;
-  z-index: 1;
   position: relative;
   color: #333;
   min-height: 80rpx;
@@ -367,11 +366,5 @@
   box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.1);
   display: flex;
   gap: 20rpx;
-}
-
-.action-section .btn-primary,
-.action-section .btn-secondary {
-  flex: 1;
-  margin: 0;
-  text-align: center;
+  z-index: 1000;
 }
