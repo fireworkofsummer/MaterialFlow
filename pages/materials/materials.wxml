@@ -50,7 +50,7 @@
           </view>
           <view class="stat-item">
             <text class="stat-label">库存价值</text>
-            <text class="stat-value">¥{{item.currentValue.toFixed(2)}}</text>
+            <text class="stat-value">¥{{item.currentValueFormatted}}</text>
           </view>
           <view class="stat-item" wx:if="{{item.minStockAlert}}">
             <text class="stat-label">预警线</text>

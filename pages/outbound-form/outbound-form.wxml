@@ -53,9 +53,8 @@
       <text class="form-label required">选择物料</text>
       <picker
         mode="selector"
-        range="{{availableMaterials}}"
-        range-key="name"
-        value="{{selectedMaterialIndex}}"
+        range="{{availableMaterialOptions}}"
+        value="{{selectedMaterialIndex + 1}}"
         bindchange="onMaterialChange"
       >
         <view class="picker-display">
@@ -171,7 +170,7 @@
           </view>
           <view class="info-row">
             <text class="info-label">总成本:</text>
-            <text class="info-value total-cost">¥{{item.totalCostFormatted}}</text>
+            <text class="info-value total-cost">¥{{item.totalCostFormatted || item.totalCost.toFixed(2)}}</text>
           </view>
         </view>
       </view>
@@ -181,7 +180,7 @@
     <view class="total-section">
       <view class="total-row">
         <text class="total-label">总成本:</text>
-        <text class="total-value">¥{{totalCostFormatted}}</text>
+        <text class="total-value">¥{{totalCostFormatted || totalCost.toFixed(2)}}</text>
       </view>
     </view>
   </view>

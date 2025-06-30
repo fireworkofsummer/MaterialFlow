@@ -12,7 +12,12 @@ Page({
       items: []
     },
     materials: [],
+    materialOptions: [], // 用于选择器的选项数组
     selectedMaterialId: null,
+    selectedMaterialIndex: -1,
+    selectedMaterialName: '',
+    selectedMaterialStock: 0,
+    selectedMaterialUnit: '',
     newItem: {
       materialId: null,
       quantity: '',
@@ -53,17 +58,65 @@ Page({
     return `IN${dateStr}${timeStr}`;
   },
 
+  // 选择物料
+  onMaterialChange(e) {
+    const materialIndex = parseInt(e.detail.value) - 1; // 减1是因为第一项是"请选择物料"
+    
+    // 如果选择的是"请选择物料"，则重置状态
+    if (materialIndex === -1) {
+      this.setData({
+        selectedMaterialIndex: -1,
+        selectedMaterialName: '',
+        selectedMaterialStock: 0,
+        selectedMaterialUnit: '',
+        'newItem.materialId': null,
+        'newItem.quantity': '',
+        'newItem.unitPrice': ''
+      });
+      return;
+    }
+    
+    const material = this.data.materials[materialIndex];
+    
+    if (material) {
+      this.setData({
+        selectedMaterialIndex: materialIndex,
+        selectedMaterialName: material.name,
+        selectedMaterialStock: material.currentStock || 0,
+        selectedMaterialUnit: material.unit,
+        'newItem.materialId': parseInt(material.id),
+        'newItem.quantity': '',
+        'newItem.unitPrice': ''
+      });
+    }
+  },
+
   // 加载物料列表
   loadMaterials() {
     try {
       const materials = StorageManager.getMaterials();
-      this.setData({ materials });
+      
+      // 创建选择器选项数组，第一项是"请选择物料"
+      const materialOptions = ['请选择物料'].concat(materials.map(m => m.name));
+      
+      this.setData({ 
+        materials,
+        materialOptions
+      });
       
       // 如果有预设的物料ID，设置为默认选择
       if (this.data.selectedMaterialId) {
-        this.setData({
-          'newItem.materialId': this.data.selectedMaterialId
-        });
+        const materialIndex = materials.findIndex(m => m.id === this.data.selectedMaterialId);
+        if (materialIndex >= 0) {
+          const material = materials[materialIndex];
+          this.setData({
+            selectedMaterialIndex: materialIndex,
+            selectedMaterialName: material.name,
+            selectedMaterialStock: material.currentStock || 0,
+            selectedMaterialUnit: material.unit,
+            'newItem.materialId': this.data.selectedMaterialId
+          });
+        }
       }
     } catch (error) {
       console.error('加载物料列表失败:', error);
@@ -87,14 +140,6 @@ Page({
     const field = e.currentTarget.dataset.field;
     this.setData({
       [`newItem.${field}`]: e.detail.value
-    });
-  },
-
-  // 选择物料
-  onMaterialChange(e) {
-    const materialId = parseInt(this.data.materials[e.detail.value].id);
-    this.setData({
-      'newItem.materialId': materialId
     });
   },
 
@@ -132,6 +177,7 @@ Page({
     const material = this.data.materials.find(m => m.id === materialId);
     const quantityNum = parseFloat(quantity);
     const unitPriceNum = parseFloat(unitPrice);
+    const totalPrice = quantityNum * unitPriceNum;
     
     const newItemData = {
       materialId,
@@ -140,7 +186,8 @@ Page({
       unit: material.unit,
       quantity: quantityNum,
       unitPrice: unitPriceNum,
-      totalPrice: quantityNum * unitPriceNum
+      totalPrice: totalPrice,
+      totalPriceFormatted: totalPrice.toFixed(2)
     };
     
     if (existingIndex >= 0) {
@@ -152,7 +199,9 @@ Page({
           if (res.confirm) {
             const items = [...this.data.form.items];
             items[existingIndex].quantity += quantityNum;
-            items[existingIndex].totalPrice = items[existingIndex].quantity * items[existingIndex].unitPrice;
+            const newTotalPrice = items[existingIndex].quantity * items[existingIndex].unitPrice;
+            items[existingIndex].totalPrice = newTotalPrice;
+            items[existingIndex].totalPriceFormatted = newTotalPrice.toFixed(2);
             
             this.setData({
               'form.items': items
@@ -185,19 +234,41 @@ Page({
 
   // 重置新增项目表单
   resetNewItem() {
-    this.setData({
-      newItem: {
-        materialId: this.data.selectedMaterialId || null,
-        quantity: '',
-        unitPrice: ''
-      }
-    });
+    // 如果有预设物料，保持选择状态
+    if (this.data.selectedMaterialId) {
+      this.setData({
+        newItem: {
+          materialId: this.data.selectedMaterialId,
+          quantity: '',
+          unitPrice: ''
+        }
+      });
+    } else {
+      this.setData({
+        selectedMaterialIndex: -1,
+        selectedMaterialName: '',
+        selectedMaterialStock: 0,
+        selectedMaterialUnit: '',
+        newItem: {
+          materialId: null,
+          quantity: '',
+          unitPrice: ''
+        }
+      });
+    }
   },
 
   // 计算总金额
   calculateTotal() {
-    const total = this.data.form.items.reduce((sum, item) => sum + item.totalPrice, 0);
-    this.setData({ totalAmount: total });
+    const total = this.data.form.items.reduce((sum, item) => {
+      const itemTotal = parseFloat(item.totalPrice) || 0;
+      return sum + itemTotal;
+    }, 0);
+    
+    this.setData({ 
+      totalAmount: total,
+      totalAmountFormatted: total.toFixed(2)
+    });
   },
 
   // 表单验证

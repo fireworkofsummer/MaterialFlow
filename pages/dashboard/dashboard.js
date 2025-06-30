@@ -43,7 +43,7 @@ Page({
       const quickStats = this.calculateQuickStats(today);
       
       this.setData({
-        totalStockValue: totalStockValue.toFixed(2),
+        totalStockValue: (parseFloat(totalStockValue) || 0).toFixed(2),
         totalMaterials,
         totalWarnings,
         warnings: warnings.slice(0, 5), // 只显示前5个预警

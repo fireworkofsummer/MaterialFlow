@@ -234,3 +234,25 @@
   margin: 0;
   text-align: center;
 }
+
+/* 库存信息 */
+.stock-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12rpx;
+  padding: 16rpx;
+  background: #e3f2fd;
+  border-radius: 6rpx;
+}
+
+.stock-label {
+  font-size: 24rpx;
+  color: #1976d2;
+}
+
+.stock-value {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #1976d2;
+}

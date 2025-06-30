@@ -92,27 +92,73 @@
   margin-bottom: 16rpx;
 }
 
+/* 物料统计区域优化 */
 .material-stats {
   display: flex;
-  gap: 40rpx;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 16rpx;
+  margin-top: 8rpx;
 }
 
 .stat-item {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 12rpx 8rpx;
+  background: #f8f9fa;
+  border-radius: 8rpx;
+  min-height: 80rpx;
+  border: 1rpx solid #e9ecef;
+}
+
+.stat-item:nth-child(1) {
+  border-left: 3rpx solid #1976d2;
+}
+
+.stat-item:nth-child(2) {
+  border-left: 3rpx solid #4caf50;
+}
+
+.stat-item:nth-child(3) {
+  border-left: 3rpx solid #ff9800;
 }
 
 .stat-label {
-  font-size: 22rpx;
-  color: #999;
-  margin-bottom: 4rpx;
+  font-size: 20rpx;
+  color: #666;
+  margin-bottom: 6rpx;
+  line-height: 1.2;
+  white-space: nowrap;
+  height: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .stat-value {
-  font-size: 26rpx;
-  font-weight: 500;
+  font-size: 24rpx;
+  font-weight: 600;
   color: #333;
+  line-height: 1.2;
+  word-break: break-all;
+  height: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.stat-value.text-warning {
+  color: #ff9800;
+}
+
+/* 库存价值特殊样式 */
+.stat-item:nth-child(2) .stat-value {
+  color: #4caf50;
 }
 
 /* 操作按钮 */

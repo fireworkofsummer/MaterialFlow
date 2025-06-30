@@ -42,12 +42,15 @@ Page({
       const isLowStock = material.minStockAlert && currentStock < material.minStockAlert;
       
       // 获取库存批次信息
-      const stockBatches = InventoryManager.getMaterialBatches(material.id);
+      const stockBatches = InventoryManager.getMaterialBatches(material.id).map(batch => ({
+        ...batch,
+        batchValue: (batch.remainingQuantity * batch.unitPrice).toFixed(2)
+      }));
       
       this.setData({
         material,
         currentStock,
-        currentValue,
+        currentValue: parseFloat(currentValue) || 0,
         stockBatches,
         isLowStock
       });

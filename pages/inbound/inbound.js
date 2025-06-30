@@ -10,7 +10,8 @@ Page({
       start: '',
       end: ''
     },
-    sortBy: 'date-desc' // date-desc, date-asc, amount-desc, amount-asc
+    sortBy: 'date-desc', // date-desc, date-asc, amount-desc, amount-asc
+    filteredTotalAmount: '0.00' // 过滤后的总金额
   },
 
   onLoad() {
@@ -41,27 +42,53 @@ Page({
       const records = StorageManager.getInboundRecords();
       const materials = StorageManager.getMaterials();
       
-      // 为记录添加物料信息和总金额
+      // 为记录添加物料信息和格式化数据
       const recordsWithDetails = records.map(record => {
-        let totalAmount = 0;
         const itemsWithMaterials = record.items.map(item => {
           const material = materials.find(m => m.id === item.materialId);
-          const itemTotal = item.quantity * item.unitPrice;
-          totalAmount += itemTotal;
+          
+          // 确保数据完整性，计算缺失的字段
+          const quantity = parseFloat(item.quantity) || 0;
+          const unitPrice = parseFloat(item.unitPrice) || 0;
+          const totalPrice = item.totalPrice || (quantity * unitPrice);
           
           return {
             ...item,
             materialName: material ? material.name : '未知物料',
             materialUnit: material ? material.unit : '',
-            itemTotal
+            quantity: quantity,
+            unitPrice: unitPrice,
+            totalPrice: totalPrice,
+            // 添加兼容字段
+            itemTotal: totalPrice
           };
         });
+        
+        // 生成物料种类列表（最多显示3种，超出则显示省略号）
+        const materialNames = itemsWithMaterials.map(item => item.materialName);
+        const uniqueMaterialNames = [...new Set(materialNames)];
+        let materialTypesDisplay = '';
+        if (uniqueMaterialNames.length <= 3) {
+          materialTypesDisplay = uniqueMaterialNames.join('、');
+        } else {
+          materialTypesDisplay = uniqueMaterialNames.slice(0, 3).join('、') + '等';
+        }
+        
+        // 重新计算总金额以确保准确性
+        const calculatedTotalAmount = itemsWithMaterials.reduce((sum, item) => {
+          return sum + (parseFloat(item.totalPrice) || 0);
+        }, 0);
+        
+        const finalTotalAmount = record.totalAmount ? parseFloat(record.totalAmount) : calculatedTotalAmount;
         
         return {
           ...record,
           items: itemsWithMaterials,
-          totalAmount,
-          displayDate: record.inboundDate.split('T')[0]
+          displayDate: record.inboundDate.split('T')[0],
+          materialTypesDisplay: materialTypesDisplay,
+          materialTypesCount: uniqueMaterialNames.length,
+          totalAmount: finalTotalAmount,
+          totalAmountFormatted: finalTotalAmount.toFixed(2)
         };
       });
       
@@ -136,6 +163,7 @@ Page({
         return record.inboundNumber?.toLowerCase().includes(keyword) ||
                record.supplier?.toLowerCase().includes(keyword) ||
                record.operator?.toLowerCase().includes(keyword) ||
+               record.materialTypesDisplay?.toLowerCase().includes(keyword) ||
                record.items.some(item => 
                  item.materialName.toLowerCase().includes(keyword)
                );
@@ -150,16 +178,22 @@ Page({
         case 'date-asc':
           return new Date(a.inboundDate) - new Date(b.inboundDate);
         case 'amount-desc':
-          return b.totalAmount - a.totalAmount;
+          return (parseFloat(b.totalAmount) || 0) - (parseFloat(a.totalAmount) || 0);
         case 'amount-asc':
-          return a.totalAmount - b.totalAmount;
+          return (parseFloat(a.totalAmount) || 0) - (parseFloat(b.totalAmount) || 0);
         default:
           return 0;
       }
     });
     
+    // 计算过滤后的总金额
+    const filteredTotalAmount = filtered.reduce((sum, record) => {
+      return sum + (parseFloat(record.totalAmount) || 0);
+    }, 0);
+    
     this.setData({
-      filteredRecords: filtered
+      filteredRecords: filtered,
+      filteredTotalAmount: filteredTotalAmount.toFixed(2)
     });
   },
 
@@ -170,14 +204,17 @@ Page({
     content += `入库日期: ${record.displayDate}\n`;
     content += `供应商: ${record.supplier || '未填写'}\n`;
     content += `经手人: ${record.operator || '未填写'}\n`;
-    content += `总金额: ¥${record.totalAmount.toFixed(2)}\n\n`;
+    content += `总金额: ¥${(parseFloat(record.totalAmount) || 0).toFixed(2)}\n\n`;
     content += `入库明细:\n`;
     
     record.items.forEach((item, index) => {
       content += `${index + 1}. ${item.materialName}\n`;
       content += `   数量: ${item.quantity}${item.materialUnit}\n`;
-      content += `   单价: ¥${item.unitPrice}\n`;
-      content += `   小计: ¥${item.itemTotal.toFixed(2)}\n`;
+      content += `   单价: ¥${(parseFloat(item.unitPrice) || 0).toFixed(2)}\n`;
+      
+      // 计算小计，兼容不同的字段名
+      const itemTotal = item.totalPrice || item.itemTotal || (item.quantity * item.unitPrice) || 0;
+      content += `   小计: ¥${(parseFloat(itemTotal) || 0).toFixed(2)}\n`;
     });
     
     if (record.remark) {

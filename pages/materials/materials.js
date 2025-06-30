@@ -33,7 +33,8 @@ Page({
         return {
           ...material,
           currentStock,
-          currentValue,
+          currentValue: parseFloat(currentValue) || 0,
+          currentValueFormatted: (parseFloat(currentValue) || 0).toFixed(2),
           isLowStock
         };
       });

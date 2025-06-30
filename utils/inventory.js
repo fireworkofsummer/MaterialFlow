@@ -193,6 +193,75 @@ class InventoryManager {
     }
   }
 
+  // 模拟FIFO出库计算（不实际扣减库存）
+  static simulateOutboundFIFO(materialId, quantity) {
+    try {
+      if (!materialId || !quantity || quantity <= 0) {
+        return {
+          success: false,
+          error: '参数无效'
+        };
+      }
+      
+      const batches = StorageManager.getStockBatches()
+        .filter(batch => batch.materialId === materialId && batch.remainingQuantity > 0)
+        .sort((a, b) => new Date(a.inboundDate) - new Date(b.inboundDate));
+      
+      if (batches.length === 0) {
+        return {
+          success: false,
+          error: '无可用库存'
+        };
+      }
+      
+      // 计算当前库存
+      const currentStock = batches.reduce((sum, batch) => sum + batch.remainingQuantity, 0);
+      
+      if (quantity > currentStock) {
+        return {
+          success: false,
+          error: `库存不足，当前库存：${currentStock}`
+        };
+      }
+      
+      // 模拟FIFO分配（不修改原始数据）
+      let remainingQuantity = quantity;
+      let totalCost = 0;
+      const batchConsumptions = [];
+      
+      for (const batch of batches) {
+        if (remainingQuantity <= 0) break;
+        
+        const consumedQuantity = Math.min(remainingQuantity, batch.remainingQuantity);
+        const cost = consumedQuantity * batch.unitPrice;
+        
+        batchConsumptions.push({
+          batchId: batch.id,
+          inboundDate: batch.inboundDate,
+          consumedQuantity: consumedQuantity,
+          unitPrice: batch.unitPrice,
+          cost: cost
+        });
+        
+        totalCost += cost;
+        remainingQuantity -= consumedQuantity;
+      }
+      
+      return {
+        success: true,
+        totalCost: totalCost,
+        batchConsumptions: batchConsumptions
+      };
+      
+    } catch (error) {
+      console.error('模拟FIFO计算失败:', error);
+      return {
+        success: false,
+        error: '计算失败'
+      };
+    }
+  }
+
   // 获取物料的库存批次详情
   static getMaterialBatches(materialId) {
     const batches = StorageManager.getStockBatches();
@@ -201,43 +270,122 @@ class InventoryManager {
       .sort((a, b) => new Date(a.inboundDate) - new Date(b.inboundDate));
   }
 
-  // 计算指定时间段的库存报表
+  // 生成库存报表
   static generateStockReport(startDate, endDate) {
-    const materials = StorageManager.getMaterials();
-    const inboundRecords = StorageManager.getInboundRecords();
-    const outboundRecords = StorageManager.getOutboundRecords();
-    
-    const report = materials.map(material => {
-      // 期初库存（开始日期前的所有入库减去出库）
-      const beginningStock = this.calculateStockAtDate(material.id, startDate, false);
+    try {
+      const materials = StorageManager.getMaterials();
+      const inboundRecords = StorageManager.getInboundRecords();
+      const outboundRecords = StorageManager.getOutboundRecords();
+      const stockBatches = StorageManager.getStockBatches();
       
-      // 期间入库
-      const periodInbound = this.calculatePeriodInbound(material.id, startDate, endDate);
+      const reportData = materials.map(material => {
+        // 计算期初库存（开始日期之前的净库存）
+        let beginningStock = 0;
+        let beginningValue = 0;
+        
+        // 期初 = 开始日期前的入库 - 开始日期前的出库
+        const beforeStartInbound = inboundRecords.filter(record => {
+          const recordDate = record.inboundDate.split('T')[0];
+          return recordDate < startDate;
+        });
+        
+        const beforeStartOutbound = outboundRecords.filter(record => {
+          const recordDate = record.outboundDate.split('T')[0];
+          return recordDate < startDate;
+        });
+        
+        // 计算期初入库
+        beforeStartInbound.forEach(record => {
+          record.items.forEach(item => {
+            if (item.materialId === material.id) {
+              beginningStock += parseFloat(item.quantity) || 0;
+              beginningValue += parseFloat(item.totalPrice) || (item.quantity * item.unitPrice) || 0;
+            }
+          });
+        });
+        
+        // 减去期初出库
+        beforeStartOutbound.forEach(record => {
+          record.items.forEach(item => {
+            if (item.materialId === material.id) {
+              beginningStock -= parseFloat(item.quantity) || 0;
+              beginningValue -= parseFloat(item.totalCost) || 0;
+            }
+          });
+        });
+        
+        // 确保期初库存不为负数
+        beginningStock = Math.max(0, beginningStock);
+        beginningValue = Math.max(0, beginningValue);
+        
+        // 计算期间入库
+        let periodInbound = 0;
+        let periodInboundValue = 0;
+        
+        const periodInboundRecords = inboundRecords.filter(record => {
+          const recordDate = record.inboundDate.split('T')[0];
+          return recordDate >= startDate && recordDate <= endDate;
+        });
+        
+        periodInboundRecords.forEach(record => {
+          record.items.forEach(item => {
+            if (item.materialId === material.id) {
+              periodInbound += parseFloat(item.quantity) || 0;
+              periodInboundValue += parseFloat(item.totalPrice) || (item.quantity * item.unitPrice) || 0;
+            }
+          });
+        });
+        
+        // 计算期间出库
+        let periodOutbound = 0;
+        let periodOutboundValue = 0;
+        
+        const periodOutboundRecords = outboundRecords.filter(record => {
+          const recordDate = record.outboundDate.split('T')[0];
+          return recordDate >= startDate && recordDate <= endDate;
+        });
+        
+        periodOutboundRecords.forEach(record => {
+          record.items.forEach(item => {
+            if (item.materialId === material.id) {
+              periodOutbound += parseFloat(item.quantity) || 0;
+              periodOutboundValue += parseFloat(item.totalCost) || 0;
+            }
+          });
+        });
+        
+        // 计算期末库存
+        const endingStock = beginningStock + periodInbound - periodOutbound;
+        const endingValue = this.getCurrentStockValue(material.id);
+        
+        return {
+          materialId: material.id,
+          materialName: material.name,
+          specification: material.specification || '',
+          unit: material.unit,
+          beginningStock: parseFloat(beginningStock.toFixed(3)),
+          beginningValue: parseFloat(beginningValue.toFixed(2)),
+          periodInbound: parseFloat(periodInbound.toFixed(3)),
+          periodInboundValue: parseFloat(periodInboundValue.toFixed(2)),
+          periodOutbound: parseFloat(periodOutbound.toFixed(3)),
+          periodOutboundValue: parseFloat(periodOutboundValue.toFixed(2)),
+          endingStock: parseFloat(endingStock.toFixed(3)),
+          endingValue: parseFloat(endingValue) || 0
+        };
+      });
       
-      // 期间出库
-      const periodOutbound = this.calculatePeriodOutbound(material.id, startDate, endDate);
+      // 过滤掉所有数据都为0的物料
+      return reportData.filter(item => 
+        item.beginningStock > 0 || 
+        item.periodInbound > 0 || 
+        item.periodOutbound > 0 || 
+        item.endingStock > 0
+      );
       
-      // 期末库存
-      const endingStock = beginningStock.quantity + periodInbound.quantity - periodOutbound.quantity;
-      const endingValue = this.getCurrentStockValue(material.id);
-      
-      return {
-        materialId: material.id,
-        materialName: material.name,
-        specification: material.specification,
-        unit: material.unit,
-        beginningStock: beginningStock.quantity,
-        beginningValue: beginningStock.value,
-        periodInbound: periodInbound.quantity,
-        periodInboundValue: periodInbound.value,
-        periodOutbound: periodOutbound.quantity,
-        periodOutboundValue: periodOutbound.value,
-        endingStock: endingStock,
-        endingValue: endingValue
-      };
-    });
-    
-    return report;
+    } catch (error) {
+      console.error('生成库存报表失败:', error);
+      return [];
+    }
   }
 
   // 计算指定日期的库存

@@ -53,15 +53,22 @@
       <text class="form-label required">选择物料</text>
       <picker
         mode="selector"
-        range="{{materials}}"
-        range-key="name"
-        value="{{selectedMaterialIndex}}"
+        range="{{materialOptions}}"
+        value="{{selectedMaterialIndex + 1}}"
         bindchange="onMaterialChange"
-        >
+      >
         <view class="picker-display">
           {{selectedMaterialName || '请选择物料'}}
         </view>
       </picker>
+      
+      <!-- 显示当前库存 -->
+      <view class="stock-info" wx:if="{{newItem.materialId}}">
+        <text class="stock-label">当前库存:</text>
+        <text class="stock-value">
+          {{selectedMaterialStock}}{{selectedMaterialUnit}}
+        </text>
+      </view>
     </view>
     
     <view class="form-row" wx:if="{{newItem.materialId}}">
@@ -90,7 +97,7 @@
       </view>
     </view>
     
-    <view class="btn-secondary" bindtap="onAddItem" wx:if="{{newItem.materialId}}">
+    <view class="btn-secondary" bindtap="onAddItem" wx:if="{{newItem.materialId && newItem.quantity && newItem.unitPrice}}">
       添加到清单
     </view>
   </view>
@@ -127,7 +134,7 @@
           </view>
           <view class="info-row">
             <text class="info-label">小计:</text>
-            <text class="info-value total-price">¥{{item.totalPrice.toFixed(2)}}</text>
+            <text class="info-value total-price">¥{{item.totalPriceFormatted || item.totalPrice.toFixed(2)}}</text>
           </view>
         </view>
       </view>
@@ -137,7 +144,7 @@
     <view class="total-section">
       <view class="total-row">
         <text class="total-label">总金额:</text>
-        <text class="total-value">¥{{totalAmount.toFixed(2)}}</text>
+        <text class="total-value">¥{{totalAmountFormatted || totalAmount.toFixed(2)}}</text>
       </view>
     </view>
   </view>

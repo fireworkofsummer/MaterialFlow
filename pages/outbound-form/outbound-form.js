@@ -12,8 +12,13 @@ Page({
       items: []
     },
     materials: [],
-    availableMaterials: [], // 有库存的物料
+    availableMaterials: [],
+    availableMaterialOptions: [], // 用于选择器的选项数组
     selectedMaterialId: null,
+    selectedMaterialIndex: -1,
+    selectedMaterialName: '',
+    selectedMaterialStock: 0,
+    selectedMaterialUnit: '',
     newItem: {
       materialId: null,
       quantity: ''
@@ -55,6 +60,40 @@ Page({
     return `OUT${dateStr}${timeStr}`;
   },
 
+  // 选择物料
+  onMaterialChange(e) {
+    const materialIndex = parseInt(e.detail.value) - 1; // 减1是因为第一项是"请选择物料"
+    
+    // 如果选择的是"请选择物料"，则重置状态
+    if (materialIndex === -1) {
+      this.setData({
+        selectedMaterialIndex: -1,
+        selectedMaterialName: '',
+        selectedMaterialStock: 0,
+        selectedMaterialUnit: '',
+        'newItem.materialId': null,
+        'newItem.quantity': '',
+        showCostPreview: false,
+        costPreview: null
+      });
+      return;
+    }
+    
+    const material = this.data.availableMaterials[materialIndex];
+    if (material) {
+      this.setData({
+        selectedMaterialIndex: materialIndex,
+        selectedMaterialName: material.name,
+        selectedMaterialStock: material.currentStock,
+        selectedMaterialUnit: material.unit,
+        'newItem.materialId': parseInt(material.id),
+        'newItem.quantity': '',
+        showCostPreview: false,
+        costPreview: null
+      });
+    }
+  },
+
   // 加载物料列表
   loadMaterials() {
     try {
@@ -72,17 +111,28 @@ Page({
         };
       });
       
+      // 创建选择器选项数组
+      const availableMaterialOptions = ['请选择物料'].concat(availableMaterials.map(m => m.name));
+      
       this.setData({ 
         materials,
-        availableMaterials 
+        availableMaterials,
+        availableMaterialOptions
       });
       
       // 如果有预设的物料ID，设置为默认选择
-      if (this.data.selectedMaterialId && 
-          availableMaterials.find(m => m.id === this.data.selectedMaterialId)) {
-        this.setData({
-          'newItem.materialId': this.data.selectedMaterialId
-        });
+      if (this.data.selectedMaterialId) {
+        const materialIndex = availableMaterials.findIndex(m => m.id === this.data.selectedMaterialId);
+        if (materialIndex >= 0) {
+          const material = availableMaterials[materialIndex];
+          this.setData({
+            selectedMaterialIndex: materialIndex,
+            selectedMaterialName: material.name,
+            selectedMaterialStock: material.currentStock,
+            selectedMaterialUnit: material.unit,
+            'newItem.materialId': this.data.selectedMaterialId
+          });
+        }
       }
     } catch (error) {
       console.error('加载物料列表失败:', error);
@@ -114,22 +164,7 @@ Page({
     }
   },
 
-  // 选择物料
-  onMaterialChange(e) {
-    const materialId = parseInt(this.data.availableMaterials[e.detail.value].id);
-    this.setData({
-      'newItem.materialId': materialId,
-      'newItem.quantity': '' // 重置数量
-    });
-    
-    // 清除成本预览
-    this.setData({
-      showCostPreview: false,
-      costPreview: null
-    });
-  },
-
-  // 预览FIFO成本计算
+  // 预览FIFO成本计算（仅模拟，不实际出库）
   previewFIFOCost() {
     const { materialId, quantity } = this.data.newItem;
     
@@ -154,11 +189,20 @@ Page({
       return;
     }
     
-    // 模拟FIFO计算
-    const result = InventoryManager.executeOutboundFIFO(materialId, quantityNum);
+    // 仅模拟FIFO计算，不实际扣减库存
+    const result = InventoryManager.simulateOutboundFIFO(materialId, quantityNum);
     
     if (result.success) {
       const material = this.data.materials.find(m => m.id === materialId);
+      const averagePrice = result.totalCost / quantityNum;
+      
+      // 处理批次详情格式化
+      const batchDetails = result.batchConsumptions.map(batch => ({
+        ...batch,
+        displayDate: batch.inboundDate.split('T')[0],
+        costFormatted: batch.cost.toFixed(2)
+      }));
+      
       this.setData({
         showCostPreview: true,
         costPreview: {
@@ -166,8 +210,10 @@ Page({
           unit: material.unit,
           quantity: quantityNum,
           totalCost: result.totalCost,
-          batchDetails: result.batchConsumptions,
-          averagePrice: result.totalCost / quantityNum
+          totalCostFormatted: result.totalCost.toFixed(2),
+          averagePrice: averagePrice,
+          averagePriceFormatted: averagePrice.toFixed(2),
+          batchDetails: batchDetails
         }
       });
     } else {
@@ -180,7 +226,7 @@ Page({
     }
   },
 
-  // 添加出库明细
+  // 添加出库明细（仅添加到界面列表，不实际出库）
   onAddItem() {
     const { materialId, quantity } = this.data.newItem;
     
@@ -202,11 +248,17 @@ Page({
     }
     
     const quantityNum = parseFloat(quantity);
-    const currentStock = InventoryManager.getCurrentStock(materialId);
     
-    if (quantityNum > currentStock) {
+    // 检查库存是否足够（包括已添加到列表的数量）
+    const currentStock = InventoryManager.getCurrentStock(materialId);
+    const existingQuantity = this.data.form.items
+      .filter(item => item.materialId === materialId)
+      .reduce((sum, item) => sum + item.quantity, 0);
+    const totalRequiredQuantity = existingQuantity + quantityNum;
+    
+    if (totalRequiredQuantity > currentStock) {
       wx.showToast({
-        title: `库存不足，当前库存：${currentStock}`,
+        title: `库存不足，当前库存：${currentStock}，已选择：${existingQuantity}`,
         icon: 'none'
       });
       return;
@@ -224,20 +276,13 @@ Page({
             const items = [...this.data.form.items];
             const newQuantity = items[existingIndex].quantity + quantityNum;
             
-            // 检查累加后是否超出库存
-            if (newQuantity > currentStock) {
-              wx.showToast({
-                title: `库存不足，当前库存：${currentStock}`,
-                icon: 'none'
-              });
-              return;
-            }
-            
-            // 重新计算FIFO成本
-            const result = InventoryManager.executeOutboundFIFO(materialId, newQuantity);
+            // 仅模拟计算成本，不实际出库
+            const result = InventoryManager.simulateOutboundFIFO(materialId, newQuantity);
             if (result.success) {
               items[existingIndex].quantity = newQuantity;
               items[existingIndex].totalCost = result.totalCost;
+              items[existingIndex].totalCostFormatted = result.totalCost.toFixed(2);
+              items[existingIndex].averageCostFormatted = (result.totalCost / newQuantity).toFixed(2);
               items[existingIndex].batchConsumptions = result.batchConsumptions;
               
               this.setData({
@@ -252,7 +297,9 @@ Page({
     } else {
       // 添加新项目
       const material = this.data.materials.find(m => m.id === materialId);
-      const result = InventoryManager.executeOutboundFIFO(materialId, quantityNum);
+      
+      // 仅模拟计算成本，不实际出库
+      const result = InventoryManager.simulateOutboundFIFO(materialId, quantityNum);
       
       if (result.success) {
         const newItemData = {
@@ -262,6 +309,8 @@ Page({
           unit: material.unit,
           quantity: quantityNum,
           totalCost: result.totalCost,
+          totalCostFormatted: result.totalCost.toFixed(2),
+          averageCostFormatted: (result.totalCost / quantityNum).toFixed(2),
           batchConsumptions: result.batchConsumptions
         };
         
@@ -327,8 +376,15 @@ Page({
 
   // 计算总成本
   calculateTotalCost() {
-    const totalCost = this.data.form.items.reduce((sum, item) => sum + item.totalCost, 0);
-    this.setData({ totalCost });
+    const totalCost = this.data.form.items.reduce((sum, item) => {
+      const itemCost = parseFloat(item.totalCost) || 0;
+      return sum + itemCost;
+    }, 0);
+    
+    this.setData({ 
+      totalCost: totalCost,
+      totalCostFormatted: totalCost.toFixed(2)
+    });
   },
 
   // 表单验证
@@ -354,7 +410,7 @@ Page({
     return true;
   },
 
-  // 保存出库单
+  // 保存出库单（只有在这里才真正执行出库操作）
   onSave() {
     if (!this.validateForm()) {
       return;
@@ -365,13 +421,32 @@ Page({
     });
     
     try {
+      // 再次验证库存是否足够
+      let stockValid = true;
+      for (const item of this.data.form.items) {
+        const currentStock = InventoryManager.getCurrentStock(item.materialId);
+        if (item.quantity > currentStock) {
+          stockValid = false;
+          wx.hideLoading();
+          wx.showToast({
+            title: `${item.materialName}库存不足`,
+            icon: 'none'
+          });
+          return;
+        }
+      }
+      
+      if (!stockValid) {
+        return;
+      }
+      
       const outboundData = {
         ...this.data.form,
         outboundNumber: this.data.form.outboundNumber || this.generateOutboundNumber(),
         totalCost: this.data.totalCost
       };
       
-      // 处理出库
+      // 真正执行出库操作
       const result = InventoryManager.processOutbound(outboundData);
       
       wx.hideLoading();

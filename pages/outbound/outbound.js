@@ -41,7 +41,7 @@ Page({
       const records = StorageManager.getOutboundRecords();
       const materials = StorageManager.getMaterials();
       
-      // 为记录添加物料信息
+      // 为记录添加物料信息和格式化数据
       const recordsWithDetails = records.map(record => {
         const itemsWithMaterials = record.items.map(item => {
           const material = materials.find(m => m.id === item.materialId);
@@ -52,10 +52,23 @@ Page({
           };
         });
         
+        // 生成物料种类列表（最多显示3种，超出则显示省略号）
+        const materialNames = itemsWithMaterials.map(item => item.materialName);
+        const uniqueMaterialNames = [...new Set(materialNames)];
+        let materialTypesDisplay = '';
+        if (uniqueMaterialNames.length <= 3) {
+          materialTypesDisplay = uniqueMaterialNames.join('、');
+        } else {
+          materialTypesDisplay = uniqueMaterialNames.slice(0, 3).join('、') + '等';
+        }
+        
         return {
           ...record,
           items: itemsWithMaterials,
-          displayDate: record.outboundDate.split('T')[0]
+          displayDate: record.outboundDate.split('T')[0],
+          materialTypesDisplay: materialTypesDisplay,
+          materialTypesCount: uniqueMaterialNames.length,
+          totalCostFormatted: (parseFloat(record.totalCost) || 0).toFixed(2)
         };
       });
       
@@ -130,6 +143,7 @@ Page({
         return record.outboundNumber?.toLowerCase().includes(keyword) ||
                record.recipient?.toLowerCase().includes(keyword) ||
                record.operator?.toLowerCase().includes(keyword) ||
+               record.materialTypesDisplay?.toLowerCase().includes(keyword) ||
                record.items.some(item => 
                  item.materialName.toLowerCase().includes(keyword)
                );
@@ -144,16 +158,22 @@ Page({
         case 'date-asc':
           return new Date(a.outboundDate) - new Date(b.outboundDate);
         case 'amount-desc':
-          return b.totalCost - a.totalCost;
+          return (parseFloat(b.totalCost) || 0) - (parseFloat(a.totalCost) || 0);
         case 'amount-asc':
-          return a.totalCost - b.totalCost;
+          return (parseFloat(a.totalCost) || 0) - (parseFloat(b.totalCost) || 0);
         default:
           return 0;
       }
     });
     
+    // 计算过滤后的总成本
+    const filteredTotalCost = filtered.reduce((sum, record) => {
+      return sum + (parseFloat(record.totalCost) || 0);
+    }, 0);
+    
     this.setData({
-      filteredRecords: filtered
+      filteredRecords: filtered,
+      filteredTotalCost: filteredTotalCost.toFixed(2)
     });
   },
 

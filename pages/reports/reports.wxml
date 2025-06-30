@@ -38,19 +38,19 @@
         <view class="summary-label">物料种类</view>
       </view>
       <view class="summary-item">
-        <view class="summary-number">¥{{summary.totalBeginningValue.toFixed(2)}}</view>
+        <view class="summary-number">¥{{summary.totalBeginningValueFormatted}}</view>
         <view class="summary-label">期初价值</view>
       </view>
       <view class="summary-item">
-        <view class="summary-number">¥{{summary.totalInboundValue.toFixed(2)}}</view>
+        <view class="summary-number">¥{{summary.totalInboundValueFormatted}}</view>
         <view class="summary-label">期间入库</view>
       </view>
       <view class="summary-item">
-        <view class="summary-number">¥{{summary.totalOutboundValue.toFixed(2)}}</view>
+        <view class="summary-number">¥{{summary.totalOutboundValueFormatted}}</view>
         <view class="summary-label">期间出库</view>
       </view>
       <view class="summary-item">
-        <view class="summary-number">¥{{summary.totalEndingValue.toFixed(2)}}</view>
+        <view class="summary-number">¥{{summary.totalEndingValueFormatted}}</view>
         <view class="summary-label">期末价值</view>
       </view>
     </view>
@@ -99,19 +99,19 @@
         </view>
         <view class="body-cell">
           <view class="cell-quantity">{{item.beginningStock}}{{item.unit}}</view>
-          <view class="cell-value">¥{{item.beginningValue.toFixed(2)}}</view>
+          <view class="cell-value">¥{{item.beginningValueFormatted}}</view>
         </view>
         <view class="body-cell">
           <view class="cell-quantity">{{item.periodInbound}}{{item.unit}}</view>
-          <view class="cell-value">¥{{item.periodInboundValue.toFixed(2)}}</view>
+          <view class="cell-value">¥{{item.periodInboundValueFormatted}}</view>
         </view>
         <view class="body-cell">
           <view class="cell-quantity">{{item.periodOutbound}}{{item.unit}}</view>
-          <view class="cell-value">¥{{item.periodOutboundValue.toFixed(2)}}</view>
+          <view class="cell-value">¥{{item.periodOutboundValueFormatted}}</view>
         </view>
         <view class="body-cell">
           <view class="cell-quantity">{{item.endingStock}}{{item.unit}}</view>
-          <view class="cell-value">¥{{item.endingValue.toFixed(2)}}</view>
+          <view class="cell-value">¥{{item.endingValueFormatted}}</view>
         </view>
       </view>
     </view>

@@ -82,18 +82,47 @@ Page({
     try {
       const reportData = InventoryManager.generateStockReport(start, end);
       
-      // 计算汇总数据
+      // 为每个物料添加格式化字段
+      const formattedReportData = reportData.map(item => ({
+        ...item,
+        beginningValueFormatted: (parseFloat(item.beginningValue) || 0).toFixed(2),
+        periodInboundValueFormatted: (parseFloat(item.periodInboundValue) || 0).toFixed(2),
+        periodOutboundValueFormatted: (parseFloat(item.periodOutboundValue) || 0).toFixed(2),
+        endingValueFormatted: (parseFloat(item.endingValue) || 0).toFixed(2)
+      }));
+      
+      // 计算汇总数据，确保数值格式正确
       const summary = {
-        totalMaterials: reportData.length,
-        totalBeginningValue: reportData.reduce((sum, item) => sum + item.beginningValue, 0),
-        totalInboundValue: reportData.reduce((sum, item) => sum + item.periodInboundValue, 0),
-        totalOutboundValue: reportData.reduce((sum, item) => sum + item.periodOutboundValue, 0),
-        totalEndingValue: reportData.reduce((sum, item) => sum + item.endingValue, 0)
+        totalMaterials: formattedReportData.length,
+        totalBeginningValue: formattedReportData.reduce((sum, item) => {
+          return sum + (parseFloat(item.beginningValue) || 0);
+        }, 0),
+        totalInboundValue: formattedReportData.reduce((sum, item) => {
+          return sum + (parseFloat(item.periodInboundValue) || 0);
+        }, 0),
+        totalOutboundValue: formattedReportData.reduce((sum, item) => {
+          return sum + (parseFloat(item.periodOutboundValue) || 0);
+        }, 0),
+        totalEndingValue: formattedReportData.reduce((sum, item) => {
+          return sum + (parseFloat(item.endingValue) || 0);
+        }, 0)
       };
       
+      // 添加格式化字段
+      const summaryFormatted = {
+        ...summary,
+        totalBeginningValueFormatted: summary.totalBeginningValue.toFixed(2),
+        totalInboundValueFormatted: summary.totalInboundValue.toFixed(2),
+        totalOutboundValueFormatted: summary.totalOutboundValue.toFixed(2),
+        totalEndingValueFormatted: summary.totalEndingValue.toFixed(2)
+      };
+      
+      console.log('报表数据:', formattedReportData);
+      console.log('汇总数据:', summaryFormatted);
+      
       this.setData({
-        reportData,
-        summary
+        reportData: formattedReportData,
+        summary: summaryFormatted
       });
       
       wx.hideLoading();
@@ -196,13 +225,20 @@ Page({
   // 查看物料详情
   onViewMaterialDetail(e) {
     const item = e.currentTarget.dataset.item;
+    
+    // 确保数值格式化正确
+    const beginningValue = parseFloat(item.beginningValue) || 0;
+    const periodInboundValue = parseFloat(item.periodInboundValue) || 0;
+    const periodOutboundValue = parseFloat(item.periodOutboundValue) || 0;
+    const endingValue = parseFloat(item.endingValue) || 0;
+    
     let content = `物料: ${item.materialName}\n`;
     content += `规格: ${item.specification}\n`;
     content += `单位: ${item.unit}\n\n`;
-    content += `期初库存: ${item.beginningStock}${item.unit} (¥${item.beginningValue.toFixed(2)})\n`;
-    content += `期间入库: ${item.periodInbound}${item.unit} (¥${item.periodInboundValue.toFixed(2)})\n`;
-    content += `期间出库: ${item.periodOutbound}${item.unit} (¥${item.periodOutboundValue.toFixed(2)})\n`;
-    content += `期末库存: ${item.endingStock}${item.unit} (¥${item.endingValue.toFixed(2)})`;
+    content += `期初库存: ${item.beginningStock || 0}${item.unit} (¥${beginningValue.toFixed(2)})\n`;
+    content += `期间入库: ${item.periodInbound || 0}${item.unit} (¥${periodInboundValue.toFixed(2)})\n`;
+    content += `期间出库: ${item.periodOutbound || 0}${item.unit} (¥${periodOutboundValue.toFixed(2)})\n`;
+    content += `期末库存: ${item.endingStock || 0}${item.unit} (¥${endingValue.toFixed(2)})`;
     
     wx.showModal({
       title: '物料明细',

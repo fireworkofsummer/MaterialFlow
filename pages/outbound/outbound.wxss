@@ -119,6 +119,11 @@
   font-size: 26rpx;
   color: #333;
   flex: 1;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 400rpx;
 }
 
 .record-footer {
@@ -134,16 +139,24 @@
   align-items: center;
 }
 
+/* 物料种类显示样式 */
+.material-types {
+  display: inline;
+  color: #ff9800;
+  font-weight: 500;
+}
+
+/* 金额显示样式 */
+.amount-value {
+  font-size: 30rpx;
+  color: #ff9800;
+  font-weight: bold;
+}
+
 .amount-label {
   font-size: 26rpx;
   color: #666;
   margin-right: 8rpx;
-}
-
-.amount-value {
-  font-size: 28rpx;
-  font-weight: bold;
-  color: #ff9800;
 }
 
 .record-actions {
