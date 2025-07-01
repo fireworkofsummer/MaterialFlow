@@ -368,3 +368,10 @@
   gap: 20rpx;
   z-index: 1000;
 }
+
+.action-section .btn-primary,
+.action-section .btn-secondary {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+}
