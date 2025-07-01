@@ -1,7 +1,7 @@
 {
     "projectname": "工料管家",
     "description": "小型工程队、装修公司或个人作坊的库存管理微信小程序",
-    "appid": "wxd03da59966a97c41",
+    "appid": "输入你的appid",
     "setting": {
         "urlCheck": false,
         "es6": true,
